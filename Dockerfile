@@ -1,6 +1,6 @@
 FROM node:lts-alpine
 
-# Update, install PostGreSQL, Yarn and supporting packages, then clean up.
+# Update, install PostgreSQL, Yarn and supporting packages, then clean up.
 RUN apk update && \
-    apk add jq libpng-dev postgresql postgresql-contrib yarn && \
+    apk add jq nasm postgresql postgresql-contrib yarn && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
