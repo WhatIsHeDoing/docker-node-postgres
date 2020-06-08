@@ -5,8 +5,61 @@
 
 ## 👋 Introduction
 
-Designed to be used as a slim base [Docker] image for [Node.js] build and serve multi-stage images
-that require [PostgreSQL] build headers. [Yarn] is also available.
+Designed to be used as a slim [Docker] base **serve-only** image for [Node.js], with libraries for
+[PostgreSQL] connectivity. [Yarn] is also available.
+
+## 🏃‍♀️ Usage
+
+Here is how you could use a multi-stage Dockerfile to build a deployment package with a larger
+image, then serve the output with `docker-node-postgres`:
+
+```dockerfile
+# 🐳 This is a multi-stage container.
+# https://docs.docker.com/develop/develop-images/multistage-build/
+# https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md
+# https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
+
+# 👷🏿 First, build and test the source code.
+FROM whatishedoing/aws-codebuild-node-postgresql:latest AS build
+
+WORKDIR /build
+
+# Copy all required files into the container.
+COPY . .
+
+RUN yarn install --frozen-lockfile
+
+ENV ci true
+
+RUN yarn ci && rm -rf node_modules
+
+# 🚀 Now copy and run the output.
+FROM whatishedoing/docker-node-postgres:latest as serve
+
+WORKDIR /app
+
+# Copy only the compiled output and minimum required files from the previous build stage.
+# https://cloud.google.com/blog/products/gcp/kubernetes-best-practices-how-and-why-to-build-small-container-images
+COPY --from=build \
+    /build/dist \
+    ./
+
+ENV NODE_ENV production
+
+# Only install production dependencies and clear the yarn cache.
+# Auto-clean is run as part of the install.
+RUN yarn install --cache-folder ./ycache --frozen-lockfile --production && \
+    rm -rf ./ycache
+
+# Finally, expose the port and command to run the API.
+EXPOSE 4000
+
+# Run as a non-root user.
+# https://github.com/goldbergyoni/nodebestpractices/blob/security-best-practices-section/sections/security/non-root-user.md
+USER node
+
+CMD ["node", "index.js"]
+```
 
 ## 🧪 Testing
 
