@@ -1,5 +1,7 @@
 # docker-node-postgres
 
+> **Retired in October 2026.** This image last built in June 2020, on Node.js 12, past end of life. Use the official [`node`](https://hub.docker.com/_/node) image with a PostgreSQL service container in CI, or [Testcontainers](https://testcontainers.com/), instead. Current WhatIsHeDoing images live in [WhatIsHeDoing/containers](https://github.com/WhatIsHeDoing/containers).
+
 [![Docker Pulls](https://img.shields.io/docker/pulls/whatishedoing/docker-node-postgres?style=for-the-badge)][site]
 [![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/whatishedoing/docker-node-postgres?style=for-the-badge)][site]
 
